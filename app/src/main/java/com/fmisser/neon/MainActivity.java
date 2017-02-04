@@ -1,19 +1,32 @@
 package com.fmisser.neon;
 
 import android.graphics.drawable.LayerDrawable;
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.design.internal.BottomNavigationItemView;
 import android.support.design.internal.BottomNavigationMenuView;
 import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 
 import com.fmisser.neon.common.BadgeDrawable;
 import com.fmisser.neon.common.Utils;
+import com.fmisser.neon.discover.TopicsFragment;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final long EXIT_MILLIS = 2000L;
+    private long lastTime = 0L;
+
+    private CoordinatorLayout mMainLayout;
     private BottomNavigationView mBottomNavigationView;
 
     @Override
@@ -21,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        mMainLayout = (CoordinatorLayout) findViewById(R.id.activity_main);
         mBottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_nav);
         initBottomNav();
     }
@@ -42,16 +56,20 @@ public class MainActivity extends AppCompatActivity {
 
                 switch (item.getItemId()) {
                     case R.id.bottom_nav_mall:
-                        setBadge(R.id.bottom_nav_discover, 999);
+
                         break;
                     case R.id.bottom_nav_discover:
-                        setBadge(R.id.bottom_nav_discover, 12);
+                        TopicsFragment topicsFragment = (TopicsFragment) getSupportFragmentManager().findFragmentById(R.id.topics_content);
+                        if (topicsFragment == null) {
+                            topicsFragment = TopicsFragment.newInstance(1);
+                        }
+                        switchToFragment(R.id.topics_content, topicsFragment);
                         break;
                     case R.id.bottom_nav_device:
-                        setBadge(R.id.bottom_nav_discover, 8);
+
                         break;
                     case R.id.bottom_nav_mine:
-                        setBadge(R.id.bottom_nav_discover, 0);
+
                         break;
                 }
                 return true;
@@ -64,5 +82,49 @@ public class MainActivity extends AppCompatActivity {
         LayerDrawable icon = (LayerDrawable) mallItem.getIcon();
         BadgeDrawable.setBadgeCount(icon, R.id.ic_badge, count);
         mallItem.setIcon(icon);
+    }
+
+    public void switchToFragment(@IdRes int containerViewId, Fragment to) {
+
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.setCustomAnimations(R.anim.fade_in, R.anim.fade_out);
+        List<Fragment> fragmentList = getSupportFragmentManager().getFragments();
+        if (fragmentList != null &&
+                !fragmentList.isEmpty()) {
+            for (Fragment fragment : fragmentList) {
+                if (fragment.isVisible()) {
+                    transaction.hide(fragment);
+                }
+            }
+        }
+
+        if (!to.isAdded()) {
+            transaction.add(containerViewId, to)
+                    .commit();
+        } else {
+            transaction.show(to)
+                    .commit();
+        }
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            onBackKeyDown();
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    private void onBackKeyDown() {
+        long currMillis = System.currentTimeMillis();
+        if (currMillis - lastTime > EXIT_MILLIS) {
+            lastTime = currMillis;
+            Snackbar.make(mMainLayout, "再按一次返回键退出", (int) EXIT_MILLIS)
+                    .show();
+        } else {
+            //退到后台,不结束应用
+            moveTaskToBack(false);
+        }
     }
 }

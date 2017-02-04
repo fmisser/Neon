@@ -31,6 +31,6 @@ ext {
 
     //dependencies
     espressoVersion = '2.2.2'
-    supportLibraryVersion = '25.0.1'
+    supportLibraryVersion = '25.1.0'
     junitVersion = '4.12'
 }
