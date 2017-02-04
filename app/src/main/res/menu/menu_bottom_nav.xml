@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item android:id="@+id/bottom_nav_mall"
+        android:title="@string/bottom_nav_mall"
+        android:icon="@drawable/ic_menu_item_mall"
+        app:showAsAction="always" />
+
+    <item android:id="@+id/bottom_nav_discover"
+        android:title="@string/bottom_nav_discover"
+        android:icon="@drawable/ic_menu_item_discover"
+        app:showAsAction="always"/>
+
+    <item android:id="@+id/bottom_nav_device"
+        android:title="@string/bottom_nav_device"
+        android:icon="@drawable/ic_menu_item_device"
+        app:showAsAction="always"/>
+
+    <item android:id="@+id/bottom_nav_mine"
+        android:title="@string/bottom_nav_mine"
+        android:icon="@drawable/ic_menu_item_mine"
+        app:showAsAction="always"/>
+
+</menu>

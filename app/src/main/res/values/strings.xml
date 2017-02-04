@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Neon</string>
+
+    <!-- bottom navigation strings -->
+    <string name="bottom_nav_mall">Mall</string>
+    <string name="bottom_nav_discover">Discover</string>
+    <string name="bottom_nav_device">Device</string>
+    <string name="bottom_nav_mine">Mine</string>
 </resources>
