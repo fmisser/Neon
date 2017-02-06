@@ -1,0 +1,18 @@
+<tabs>
+    <tab
+        id="@+id/tab_mall"
+        icon="@drawable/ic_store_mall_directory_black_24dp"
+        title="Mall" />
+    <tab
+        id="@+id/tab_discover"
+        icon="@drawable/ic_explore_black_24dp"
+        title="Discover" />
+    <tab
+        id="@+id/tab_device"
+        icon="@drawable/ic_device_hub_black_24dp"
+        title="Device" />
+    <tab
+        id="@+id/tab_mine"
+        icon="@drawable/ic_person_black_24dp"
+        title="Mine" />
+</tabs>

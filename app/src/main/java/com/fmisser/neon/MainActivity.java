@@ -18,6 +18,9 @@ import android.view.MenuItem;
 import com.fmisser.neon.common.BadgeDrawable;
 import com.fmisser.neon.common.Utils;
 import com.fmisser.neon.discover.TopicsFragment;
+import com.roughike.bottombar.BottomBar;
+import com.roughike.bottombar.OnTabReselectListener;
+import com.roughike.bottombar.OnTabSelectListener;
 
 import java.util.List;
 
@@ -28,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
 
     private CoordinatorLayout mMainLayout;
     private BottomNavigationView mBottomNavigationView;
+    private BottomBar mBottomBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,10 +39,18 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mMainLayout = (CoordinatorLayout) findViewById(R.id.activity_main);
-        mBottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_nav);
-        initBottomNav();
+//        mBottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_nav);
+//        initBottomNav();
+
+        mBottomBar = (BottomBar) findViewById(R.id.bottom_bar);
+        mBottomBar.setDefaultTab(R.id.tab_mall);
+        initBottomBar();
     }
 
+    /**
+     * @deprecated Support 25.1.1 BottomNavigationView实现仍然不完整,暂时丢弃.
+     */
+    @Deprecated
     private void initBottomNav() {
         //禁用 shift mode
         Utils.disableShiftMode(mBottomNavigationView);
@@ -77,11 +89,58 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * @deprecated Support 25.1.1 BottomNavigationView实现仍然不完整,暂时丢弃.
+     */
+    @Deprecated
     private void setBadge(int id, int count) {
         MenuItem mallItem = mBottomNavigationView.getMenu().findItem(id);
         LayerDrawable icon = (LayerDrawable) mallItem.getIcon();
         BadgeDrawable.setBadgeCount(icon, R.id.ic_badge, count);
         mallItem.setIcon(icon);
+    }
+
+    private void initBottomBar() {
+        mBottomBar.setOnTabSelectListener(new OnTabSelectListener() {
+            @Override
+            public void onTabSelected(@IdRes int tabId) {
+                switch (tabId) {
+                    case R.id.tab_mall:
+                        break;
+                    case R.id.tab_discover:
+                        TopicsFragment topicsFragment = (TopicsFragment) getSupportFragmentManager().findFragmentById(R.id.topics_content);
+                        if (topicsFragment == null) {
+                            topicsFragment = TopicsFragment.newInstance(1);
+                        }
+                        switchToFragment(R.id.topics_content, topicsFragment);
+                        break;
+                    case R.id.tab_device:
+                        break;
+                    case R.id.tab_mine:
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
+
+        mBottomBar.setOnTabReselectListener(new OnTabReselectListener() {
+            @Override
+            public void onTabReSelected(@IdRes int tabId) {
+                switch (tabId) {
+                    case R.id.tab_mall:
+                        break;
+                    case R.id.tab_discover:
+                        break;
+                    case R.id.tab_device:
+                        break;
+                    case R.id.tab_mine:
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
     }
 
     public void switchToFragment(@IdRes int containerViewId, Fragment to) {

@@ -3,4 +3,17 @@
     <dimen name="activity_horizontal_margin">0dp</dimen>
     <dimen name="activity_vertical_margin">0dp</dimen>
     <dimen name="text_margin">16dp</dimen>
+
+    <!-- Bottom bar -->
+    <dimen name="bottom_bar_height">56dp</dimen>
+
+    <!-- Search bar -->
+    <dimen name="search_bar_height">48dp</dimen>
+    <dimen name="search_bar_horizontal_margin">16dp</dimen>
+    <dimen name="search_bar_vertical_margin">8dp</dimen>
+    
+    <!-- Topics fragment RecyclerView -->
+    <dimen name="topics_list_padding_top">56dp</dimen>
+    <dimen name="topics_list_item_horizontal_margin">16dp</dimen>
+    <dimen name="topics_list_item_vertical_margin">8dp</dimen>
 </resources>

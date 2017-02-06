@@ -38,5 +38,6 @@ dependencies {
     compile "com.android.support:design:$rootProject.ext.supportLibraryVersion"
     compile "com.android.support:cardview-v7:$rootProject.ext.supportLibraryVersion"
     compile "com.android.support:recyclerview-v7:$rootProject.ext.supportLibraryVersion"
+    compile "com.roughike:bottom-bar:$rootProject.ext.bottomBarVersion"
     testCompile "junit:junit:$rootProject.ext.junitVersion"
 }

@@ -31,6 +31,8 @@ ext {
 
     //dependencies
     espressoVersion = '2.2.2'
-    supportLibraryVersion = '25.1.0'
+    supportLibraryVersion = '25.1.1'
+    //第三方底部导航栏,官方实现问题很多
+    bottomBarVersion = '2.1.1'
     junitVersion = '4.12'
 }

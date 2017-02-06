@@ -6,9 +6,11 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.DecelerateInterpolator;
 
 import com.fmisser.neon.R;
 import com.fmisser.neon.discover.dummy.DummyContent;
@@ -21,6 +23,10 @@ import com.fmisser.neon.discover.dummy.DummyContent.DummyItem;
  * interface.
  */
 public class TopicsFragment extends Fragment {
+
+    private Toolbar mSearchBar;
+    private int mSearchBarTopMargin = 0;
+    private RecyclerView mRecyclerView;
 
     // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
@@ -57,20 +63,38 @@ public class TopicsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_topics_list, container, false);
+        View root = inflater.inflate(R.layout.fragment_topics_list, container, false);
+
+        mSearchBar = (Toolbar) root.findViewById(R.id.search_bar);
+        mSearchBarTopMargin = getContext().getResources().getDimensionPixelSize(R.dimen.search_bar_vertical_margin);
 
         // Set the adapter
-        if (view instanceof RecyclerView) {
-            Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
-            if (mColumnCount <= 1) {
-                recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            } else {
-                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
-            }
-            recyclerView.setAdapter(new MyTopicsRecyclerViewAdapter(DummyContent.ITEMS, mListener));
+        Context context = root.getContext();
+        mRecyclerView = (RecyclerView) root.findViewById(R.id.list);
+        if (mColumnCount <= 1) {
+            mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+        } else {
+            mRecyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
         }
-        return view;
+        mRecyclerView.setAdapter(new MyTopicsRecyclerViewAdapter(DummyContent.ITEMS, mListener));
+        mRecyclerView.addOnScrollListener(new HidingScrollerListener() {
+            @Override
+            public void onHide() {
+
+                mSearchBar.animate()
+                        .translationY(-mSearchBar.getHeight() - mSearchBarTopMargin)
+                        .setInterpolator(new DecelerateInterpolator(2.0f));
+            }
+
+            @Override
+            public void onShow() {
+                mSearchBar.animate()
+                        .translationY(0)
+                        .setInterpolator(new DecelerateInterpolator(2.0f));
+            }
+        });
+
+        return root;
     }
 
 
@@ -104,5 +128,49 @@ public class TopicsFragment extends Fragment {
     public interface OnListFragmentInteractionListener {
         // TODO: Update argument type and name
         void onListFragmentInteraction(DummyItem item);
+    }
+
+
+    /**
+     * 滚动隐藏监听器, 为了实现Toolbar 滚动时显示或者隐藏, 参考 @see https://mzgreen.github.io/2015/02/15/How-to-hideshow-Toolbar-when-list-is-scroling(part1)/
+     */
+    public abstract class HidingScrollerListener extends RecyclerView.OnScrollListener {
+        private static final int HIDE_THRESHOLD = 1;
+        private int mScrolled = 0;
+        private boolean mVisible = true;
+
+        public abstract void onHide();
+        public abstract void onShow();
+
+        @Override
+        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+
+            super.onScrolled(recyclerView, dx, dy);
+            int firstVisibleItem = ((LinearLayoutManager) recyclerView.getLayoutManager()).findFirstVisibleItemPosition();
+
+            //当第一个item仍然可见的时候,显示toolbar或者不执行隐藏操作
+            if (firstVisibleItem == 0) {
+                if (!mVisible) {
+                    onShow();
+                    mVisible = true;
+                }
+            } else {
+
+                if (mScrolled > HIDE_THRESHOLD && mVisible) {
+                    onHide();
+                    mVisible = false;
+                    mScrolled = 0;
+                } else if (mScrolled < -HIDE_THRESHOLD && !mVisible) {
+                    onShow();
+                    mVisible = true;
+                    mScrolled = 0;
+                }
+            }
+
+            if ((mVisible && dy > 0) ||
+                    (!mVisible && dy< 0)) {
+                mScrolled += dy;
+            }
+        }
     }
 }
