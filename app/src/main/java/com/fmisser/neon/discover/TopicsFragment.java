@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -26,7 +27,7 @@ import com.fmisser.neon.discover.dummy.DummyContent.DummyItem;
  */
 public class TopicsFragment extends Fragment {
 
-    private Toolbar mSearchBar;
+    private CardView mSearchBar;
     private int mSearchBarTopMargin = 0;
     private RecyclerView mRecyclerView;
 
@@ -67,7 +68,7 @@ public class TopicsFragment extends Fragment {
                              Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_topics_list, container, false);
 
-        mSearchBar = (Toolbar) root.findViewById(R.id.search_bar);
+        mSearchBar = (CardView) root.findViewById(R.id.search_bar);
 
         //沉浸式全屏需要偏移status bar的高度
         int statusBarHeight = Utils.getStatusBarHeight(getContext());

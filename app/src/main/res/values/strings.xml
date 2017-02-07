@@ -6,4 +6,8 @@
     <string name="bottom_nav_discover">Discover</string>
     <string name="bottom_nav_device">Device</string>
     <string name="bottom_nav_mine">Mine</string>
+
+    <!-- Search bar strings -->
+    <string name="search_bar_edit_text_hint">Search</string>
+
 </resources>
