@@ -1,6 +1,8 @@
 package com.fmisser.neon;
 
+import android.graphics.Color;
 import android.graphics.drawable.LayerDrawable;
+import android.os.Build;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.design.internal.BottomNavigationItemView;
@@ -14,6 +16,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.WindowManager;
+import android.widget.FrameLayout;
 
 import com.fmisser.neon.common.BadgeDrawable;
 import com.fmisser.neon.common.Utils;
@@ -32,19 +37,38 @@ public class MainActivity extends AppCompatActivity {
     private CoordinatorLayout mMainLayout;
     private BottomNavigationView mBottomNavigationView;
     private BottomBar mBottomBar;
+    private FrameLayout mFragmentContent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
 
         mMainLayout = (CoordinatorLayout) findViewById(R.id.activity_main);
 //        mBottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_nav);
 //        initBottomNav();
 
+        mFragmentContent = (FrameLayout) findViewById(R.id.topics_content);
+
         mBottomBar = (BottomBar) findViewById(R.id.bottom_bar);
         mBottomBar.setDefaultTab(R.id.tab_mall);
         initBottomBar();
+
+        /**
+         * 设置半透明status bar & navigation bar
+         */
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            getWindow().setStatusBarColor(getResources().getColor(R.color.colorTranslucent));
+            getWindow().setNavigationBarColor(getResources().getColor(R.color.colorTranslucent));
+            getWindow()
+                    .getDecorView()
+                    .setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
+        }
     }
 
     /**
@@ -129,8 +153,13 @@ public class MainActivity extends AppCompatActivity {
             public void onTabReSelected(@IdRes int tabId) {
                 switch (tabId) {
                     case R.id.tab_mall:
+
                         break;
                     case R.id.tab_discover:
+                        TopicsFragment topicsFragment = (TopicsFragment) getSupportFragmentManager().findFragmentById(R.id.topics_content);
+                        if (topicsFragment != null) {
+                            topicsFragment.reselect();
+                        }
                         break;
                     case R.id.tab_device:
                         break;

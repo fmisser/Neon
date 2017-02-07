@@ -2,6 +2,7 @@ package com.fmisser.neon.discover;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -13,6 +14,7 @@ import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 
 import com.fmisser.neon.R;
+import com.fmisser.neon.common.Utils;
 import com.fmisser.neon.discover.dummy.DummyContent;
 import com.fmisser.neon.discover.dummy.DummyContent.DummyItem;
 
@@ -66,7 +68,13 @@ public class TopicsFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_topics_list, container, false);
 
         mSearchBar = (Toolbar) root.findViewById(R.id.search_bar);
-        mSearchBarTopMargin = getContext().getResources().getDimensionPixelSize(R.dimen.search_bar_vertical_margin);
+
+        //沉浸式全屏需要偏移status bar的高度
+        int statusBarHeight = Utils.getStatusBarHeight(getContext());
+        mSearchBarTopMargin = getContext().getResources().getDimensionPixelSize(R.dimen.search_bar_vertical_margin) + statusBarHeight;
+        CoordinatorLayout.LayoutParams layoutParams = (CoordinatorLayout.LayoutParams) mSearchBar.getLayoutParams();
+        layoutParams.topMargin = mSearchBarTopMargin;
+        mSearchBar.setLayoutParams(layoutParams);
 
         // Set the adapter
         Context context = root.getContext();
@@ -94,6 +102,11 @@ public class TopicsFragment extends Fragment {
             }
         });
 
+        //沉浸式全屏需要偏移status bar的高度
+        int recyclerViewTopPadding = getContext().getResources().getDimensionPixelSize(R.dimen.topics_list_padding_top) + statusBarHeight;
+        mRecyclerView.setPadding(0, recyclerViewTopPadding, 0, 0);
+        mRecyclerView.setClipToPadding(false);
+
         return root;
     }
 
@@ -113,6 +126,11 @@ public class TopicsFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    //再次点击回到顶部
+    public void reselect() {
+        mRecyclerView.smoothScrollToPosition(0);
     }
 
     /**
