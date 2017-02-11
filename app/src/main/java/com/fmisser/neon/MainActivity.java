@@ -1,6 +1,6 @@
 package com.fmisser.neon;
 
-import android.graphics.Color;
+import android.content.Intent;
 import android.graphics.drawable.LayerDrawable;
 import android.os.Build;
 import android.support.annotation.IdRes;
@@ -9,27 +9,30 @@ import android.support.design.internal.BottomNavigationItemView;
 import android.support.design.internal.BottomNavigationMenuView;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
+import android.support.design.widget.FloatingActionButton;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
 
 import com.fmisser.neon.common.BadgeDrawable;
+import com.fmisser.neon.common.ScrollFloatingActionButtonBehavior;
 import com.fmisser.neon.common.Utils;
-import com.fmisser.neon.discover.TopicsFragment;
+import com.fmisser.neon.topicdetail.TopicDetailActivity;
+import com.fmisser.neon.topics.TopicsFragment;
+import com.fmisser.neon.topics.dummy.DummyContent;
 import com.roughike.bottombar.BottomBar;
 import com.roughike.bottombar.OnTabReselectListener;
 import com.roughike.bottombar.OnTabSelectListener;
 
-import java.util.List;
-
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity implements TopicsFragment.OnListFragmentInteractionListener {
 
     private static final long EXIT_MILLIS = 2000L;
     private long lastTime = 0L;
@@ -38,6 +41,9 @@ public class MainActivity extends AppCompatActivity {
     private BottomNavigationView mBottomNavigationView;
     private BottomBar mBottomBar;
     private FrameLayout mFragmentContent;
+    private FloatingActionButton mFabAdd;
+    private int mFabAddBottomMargin;
+    private Interpolator mScrollInterpolator = new DecelerateInterpolator(2.0f);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,18 +51,9 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
 
-        mMainLayout = (CoordinatorLayout) findViewById(R.id.activity_main);
-//        mBottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_nav);
-//        initBottomNav();
-
-        mFragmentContent = (FrameLayout) findViewById(R.id.topics_content);
-
-        mBottomBar = (BottomBar) findViewById(R.id.bottom_bar);
-        mBottomBar.setDefaultTab(R.id.tab_mall);
-        initBottomBar();
-
         /**
          * 设置半透明status bar & navigation bar
+         * 同时设置Fullscreen
          */
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
@@ -69,6 +66,46 @@ public class MainActivity extends AppCompatActivity {
                             | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                             | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
         }
+
+        mMainLayout = (CoordinatorLayout) findViewById(R.id.activity_main);
+//        mBottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_nav);
+//        initBottomNav();
+
+        //Bottom bar
+        mBottomBar = (BottomBar) findViewById(R.id.bottom_bar);
+        mBottomBar.setDefaultTab(R.id.tab_mall);
+        initBottomBar();
+
+
+        /**
+         * Fab
+         */
+        mFragmentContent = (FrameLayout) findViewById(R.id.topics_content);
+        mFabAdd = (FloatingActionButton) findViewById(R.id.fab_add);
+
+        //fab offset
+        int navigationBarHeight = Utils.getNavigationBarHeight(this);
+        int bottomBarHeight = getResources().getDimensionPixelSize(R.dimen.bottom_bar_height);
+        mFabAddBottomMargin = getResources().getDimensionPixelSize(R.dimen.topics_fab_vertical_margin) + navigationBarHeight + bottomBarHeight;
+        CoordinatorLayout.LayoutParams layoutParams = (CoordinatorLayout.LayoutParams) mFabAdd.getLayoutParams();
+        layoutParams.bottomMargin = mFabAddBottomMargin;
+        //fab behavior
+        layoutParams.setBehavior(new ScrollFloatingActionButtonBehavior() {
+            @Override
+            public void onHide() {
+                mFabAdd.animate()
+                        .translationY(mFabAddBottomMargin + mFabAdd.getHeight())
+                        .setInterpolator(mScrollInterpolator);
+            }
+
+            @Override
+            public void onShow() {
+                mFabAdd.animate()
+                        .translationY(0)
+                        .setInterpolator(mScrollInterpolator);
+            }
+        });
+        mFabAdd.setLayoutParams(layoutParams);
     }
 
     /**
@@ -172,27 +209,9 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void switchToFragment(@IdRes int containerViewId, Fragment to) {
-
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.setCustomAnimations(R.anim.fade_in, R.anim.fade_out);
-        List<Fragment> fragmentList = getSupportFragmentManager().getFragments();
-        if (fragmentList != null &&
-                !fragmentList.isEmpty()) {
-            for (Fragment fragment : fragmentList) {
-                if (fragment.isVisible()) {
-                    transaction.hide(fragment);
-                }
-            }
-        }
-
-        if (!to.isAdded()) {
-            transaction.add(containerViewId, to)
-                    .commit();
-        } else {
-            transaction.show(to)
-                    .commit();
-        }
+    @Override
+    public View getSnackBarHolderView() {
+        return mMainLayout;
     }
 
     @Override
@@ -208,11 +227,17 @@ public class MainActivity extends AppCompatActivity {
         long currMillis = System.currentTimeMillis();
         if (currMillis - lastTime > EXIT_MILLIS) {
             lastTime = currMillis;
-            Snackbar.make(mMainLayout, "再按一次返回键退出", (int) EXIT_MILLIS)
-                    .show();
+            Snackbar.make(getSnackBarHolderView(), "再按一次返回键退出", (int) EXIT_MILLIS).show();
         } else {
             //退到后台,不结束应用
             moveTaskToBack(false);
         }
+    }
+
+    @Override
+    public void onListFragmentInteraction(View view, DummyContent.DummyItem item) {
+        ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeScaleUpAnimation(view, view.getWidth()/2, view.getHeight()/2, 0, 0);
+        Intent intent = new Intent(this, TopicDetailActivity.class);
+        ActivityCompat.startActivity(this, intent, optionsCompat.toBundle());
     }
 }

@@ -4,19 +4,29 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorWhite">
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/list"
-        android:name="com.fmisser.neon.discover.TopicsFragment"
+    android:background="@color/colorGrey100">
+    
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/refresh_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingTop="@dimen/topics_list_padding_top"
-        android:clipToPadding="false"
-        android:overScrollMode="never"
-        app:layoutManager="LinearLayoutManager"
-        tools:context="com.fmisser.neon.discover.TopicsFragment"
-        tools:listitem="@layout/fragment_topics" />
+        android:layout_height="match_parent">
+
+        <android.support.v7.widget.RecyclerView
+
+            android:id="@+id/list"
+            android:name="com.fmisser.neon.discover.TopicsFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingTop="@dimen/topics_list_padding_top"
+            android:clipToPadding="false"
+            android:overScrollMode="never"
+            app:layoutManager="LinearLayoutManager"
+            tools:context="com.fmisser.neon.topics.TopicsFragment"
+            tools:listitem="@layout/fragment_topics" />
+
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+
 
     <android.support.v7.widget.CardView
         android:id="@+id/search_bar"

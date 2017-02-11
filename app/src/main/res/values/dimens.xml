@@ -9,20 +9,23 @@
 
     <!-- Search bar -->
     <dimen name="search_bar_height">48dp</dimen>
-    <dimen name="search_bar_horizontal_margin">16dp</dimen>
+    <dimen name="search_bar_horizontal_margin">8dp</dimen>
     <dimen name="search_bar_vertical_margin">8dp</dimen>
     <dimen name="search_bar_icon_horizontal_margin">16dp</dimen>
-
     <dimen name="search_bar_elevation">4dp</dimen>
-
     <dimen name="search_bar_search_text_size">16sp</dimen>
-    
+
     <!-- Topics fragment RecyclerView -->
     <dimen name="topics_list_padding_top">56dp</dimen>
-    <dimen name="topics_list_item_horizontal_margin">16dp</dimen>
+    <dimen name="topics_list_item_horizontal_margin">8dp</dimen>
     <dimen name="topics_list_item_vertical_margin">8dp</dimen>
-
     <dimen name="topics_list_item_elevation">1dp</dimen>
+    <dimen name="topics_fab_horizontal_margin">8dp</dimen>
+    <dimen name="topics_fab_vertical_margin">32dp</dimen>
+
+    <!-- topic detail activity -->
+    <dimen name="topic_detail_app_bar_height">200dp</dimen>
+    <dimen name="fab_margin_right">16dp</dimen>
 
 
 </resources>

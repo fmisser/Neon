@@ -11,5 +11,9 @@
         <!--<item name="android:windowTranslucentNavigation">false</item>-->
         <!--<item name="android:navigationBarColor">@color/colorTranslucent</item>-->
         <!--<item name="android:windowDrawsSystemBarBackgrounds">true</item>-->
+
+        <!--enable window content transitions -->
+        <item name="android:windowContentTransitions">true</item>
+
     </style>
 </resources>

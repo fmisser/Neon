@@ -42,6 +42,18 @@ public class Utils {
     }
 
     /**
+     * 获取状态栏高度
+     */
+    public static int getNavigationBarHeight(Context context) {
+        int resourceId = context.getResources().getIdentifier("navigation_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            return context.getResources().getDimensionPixelSize(resourceId);
+        } else {
+            return 0;
+        }
+    }
+
+    /**
      * 获取DisplayMetrics
      */
     public static DisplayMetrics getDisplayMetrics(Context context) {

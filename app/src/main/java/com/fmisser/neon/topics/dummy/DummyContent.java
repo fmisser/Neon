@@ -1,4 +1,4 @@
-package com.fmisser.neon.discover.dummy;
+package com.fmisser.neon.topics.dummy;
 
 import java.util.ArrayList;
 import java.util.HashMap;

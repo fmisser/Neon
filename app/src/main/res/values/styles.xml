@@ -7,5 +7,15 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
+    
+    <!-- Toolbar theme -->
+    <style name="ToolbarTheme" parent="Theme.AppCompat.Light">
+        <!-- overflow icon color -->
+        <item name="android:textColorSecondary">@color/colorGrey600</item>
+    </style>
 
+    <!-- topic detail -->
+    <style name="CollapsedTextAppearance" parent="@android:style/TextAppearance.Medium">
+        <item name="android:textColor">@color/colorGrey600</item>
+    </style>
 </resources>

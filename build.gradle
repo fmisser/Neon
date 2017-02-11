@@ -32,7 +32,11 @@ ext {
     //dependencies
     espressoVersion = '2.2.2'
     supportLibraryVersion = '25.1.1'
-    //第三方底部导航栏,官方实现问题很多
+    //第三方底部导航栏, 官方实现问题很多(support版本25.1.1)
     bottomBarVersion = '2.1.1'
     junitVersion = '4.12'
+    glideVersion = '3.7.0'
+    circleImageVersion = '2.1.0'
+    //第三方AppBarLayout, 官方fling有bug,问题很多(support版本25.1.1)
+    smoothAppBarVersion = '25.1.0.0'
 }

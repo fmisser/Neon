@@ -1,23 +1,27 @@
-package com.fmisser.neon.discover;
+package com.fmisser.neon.topics;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.v4.app.Fragment;
+import android.support.design.widget.Snackbar;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
+import android.view.animation.Interpolator;
 
+import com.fmisser.neon.BaseFragment;
 import com.fmisser.neon.R;
 import com.fmisser.neon.common.Utils;
-import com.fmisser.neon.discover.dummy.DummyContent;
-import com.fmisser.neon.discover.dummy.DummyContent.DummyItem;
+import com.fmisser.neon.topics.dummy.DummyContent;
+import com.fmisser.neon.topics.dummy.DummyContent.DummyItem;
 
 /**
  * A fragment representing a list of Items.
@@ -25,11 +29,14 @@ import com.fmisser.neon.discover.dummy.DummyContent.DummyItem;
  * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
  * interface.
  */
-public class TopicsFragment extends Fragment {
+public class TopicsFragment extends BaseFragment {
 
     private CardView mSearchBar;
-    private int mSearchBarTopMargin = 0;
+    private int mSearchBarTopMargin;
     private RecyclerView mRecyclerView;
+    private MyTopicsRecyclerViewAdapter mAdapter;
+    private SwipeRefreshLayout mRefreshLayout;
+    private Interpolator mScrollInterpolator = new DecelerateInterpolator(2.0f);
 
     // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
@@ -85,28 +92,73 @@ public class TopicsFragment extends Fragment {
         } else {
             mRecyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
         }
-        mRecyclerView.setAdapter(new MyTopicsRecyclerViewAdapter(DummyContent.ITEMS, mListener));
+
+        mAdapter = new MyTopicsRecyclerViewAdapter(DummyContent.ITEMS, mListener);
+        mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.addOnScrollListener(new HidingScrollerListener() {
             @Override
             public void onHide() {
 
                 mSearchBar.animate()
                         .translationY(-mSearchBar.getHeight() - mSearchBarTopMargin)
-                        .setInterpolator(new DecelerateInterpolator(2.0f));
+                        .setInterpolator(mScrollInterpolator);
             }
 
             @Override
             public void onShow() {
                 mSearchBar.animate()
                         .translationY(0)
-                        .setInterpolator(new DecelerateInterpolator(2.0f));
+                        .setInterpolator(mScrollInterpolator);
             }
         });
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(ItemTouchHelper.ACTION_STATE_IDLE, ItemTouchHelper.RIGHT) {
+
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                int pos = viewHolder.getAdapterPosition();
+                mAdapter.remove(pos);
+                Snackbar.make(getSnackBarHolderView(), "第" + (pos + 1) + "条数据已删除", Snackbar.LENGTH_SHORT)
+                        .setAction("撤销", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                mAdapter.recoverLastDeleted();
+                            }
+                        }).show();
+            }
+        });
+        itemTouchHelper.attachToRecyclerView(mRecyclerView);
 
         //沉浸式全屏需要偏移status bar的高度
         int recyclerViewTopPadding = getContext().getResources().getDimensionPixelSize(R.dimen.topics_list_padding_top) + statusBarHeight;
         mRecyclerView.setPadding(0, recyclerViewTopPadding, 0, 0);
         mRecyclerView.setClipToPadding(false);
+
+
+        mRefreshLayout = (SwipeRefreshLayout) root.findViewById(R.id.refresh_layout);
+        mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (mRefreshLayout.isRefreshing()) {
+                            mRefreshLayout.setRefreshing(false);
+                            Snackbar.make(getSnackBarHolderView(), "更新了10条内容", Snackbar.LENGTH_SHORT).show();
+                        }
+                    }
+                }, 2000);
+            }
+        });
+
+        int startOffset = recyclerViewTopPadding - mRefreshLayout.getProgressCircleDiameter();
+        mRefreshLayout.setProgressViewOffset(false, startOffset, startOffset + mRefreshLayout.getProgressViewEndOffset());
+
 
         return root;
     }
@@ -115,12 +167,12 @@ public class TopicsFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-//        if (context instanceof OnListFragmentInteractionListener) {
-//            mListener = (OnListFragmentInteractionListener) context;
-//        } else {
-//            throw new RuntimeException(context.toString()
-//                    + " must implement OnListFragmentInteractionListener");
-//        }
+        if (context instanceof OnListFragmentInteractionListener) {
+            mListener = (OnListFragmentInteractionListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnListFragmentInteractionListener");
+        }
     }
 
     @Override
@@ -132,6 +184,7 @@ public class TopicsFragment extends Fragment {
     //再次点击回到顶部
     public void reselect() {
         mRecyclerView.smoothScrollToPosition(0);
+        mRefreshLayout.setRefreshing(true);
     }
 
     /**
@@ -146,7 +199,7 @@ public class TopicsFragment extends Fragment {
      */
     public interface OnListFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onListFragmentInteraction(DummyItem item);
+        void onListFragmentInteraction(View view, DummyItem item);
     }
 
 

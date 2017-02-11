@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item android:id="@+id/share"
+        android:title="@string/topic_detail_tool_bar_share"
+        android:icon="@drawable/ic_share_grey_600_24dp"
+        app:showAsAction="always" />
+
+    <item android:id="@+id/report"
+        android:title="@string/topic_detail_tool_bar_report"
+        app:showAsAction="collapseActionView"/>
+
+</menu>

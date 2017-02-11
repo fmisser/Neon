@@ -17,6 +17,17 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_add"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginRight="@dimen/topics_fab_horizontal_margin"
+        android:layout_marginEnd="@dimen/topics_fab_horizontal_margin"
+        android:layout_marginBottom="@dimen/topics_fab_vertical_margin" />
+
+
     <!-- 官方实现目前还有问题 -->
     <!--<android.support.design.widget.BottomNavigationView-->
         <!--android:id="@+id/bottom_nav"-->

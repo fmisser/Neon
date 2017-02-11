@@ -5,17 +5,17 @@
     <item android:id="@+id/bottom_nav_mall"
         android:title="@string/bottom_nav_mall"
         android:icon="@drawable/ic_menu_item_mall"
-        app:showAsAction="always" />
+        app:showAsAction="ifRoom" />
 
     <item android:id="@+id/bottom_nav_discover"
         android:title="@string/bottom_nav_discover"
         android:icon="@drawable/ic_menu_item_discover"
-        app:showAsAction="always"/>
+        app:showAsAction="ifRoom"/>
 
     <item android:id="@+id/bottom_nav_device"
         android:title="@string/bottom_nav_device"
         android:icon="@drawable/ic_menu_item_device"
-        app:showAsAction="always"/>
+        app:showAsAction="ifRoom"/>
 
     <item android:id="@+id/bottom_nav_mine"
         android:title="@string/bottom_nav_mine"

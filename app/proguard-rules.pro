@@ -16,6 +16,14 @@
 #   public *;
 #}
 
+# 反射修改BottomNavigationView shift mode
 -keepclassmembers class android.support.design.internal.BottomNavigationMenuView {
      boolean mShiftingMode;
+}
+
+# for glide 3.7.0
+-keep public class * implements com.bumptech.glide.module.GlideModule
+-keep public enum com.bumptech.glide.load.resource.bitmap.ImageHeaderParser$** {
+  **[] $VALUES;
+  public *;
 }
